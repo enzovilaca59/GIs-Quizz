@@ -3,7 +3,7 @@ const router = express.Router();
 
 router.post('/qcm', async (req, res) => {
   const sujet = req.body.sujet || "informatique";
-  // QCM de secours : marche pour tout sujet, tout le temps
+
   const qcm = [
     {
       question: `Question test sur ${sujet}`,
@@ -16,6 +16,7 @@ router.post('/qcm', async (req, res) => {
       answer: "Choix 1"
     }
   ];
+
   res.json({ qcm });
 });
 
