@@ -6,6 +6,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+import qcmRouter from './routes/qcm.js'; // EXTENSION .js 
+app.use('/api', qcmRouter);
+
+
 const PERPLEXITY_API_KEY = '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'; // À remplacer par votre clé Perplexity
 const PERPLEXITY_API_URL = 'https://api.perplexity.ai/chat/completions';
 

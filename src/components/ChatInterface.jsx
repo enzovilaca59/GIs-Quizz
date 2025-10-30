@@ -1,46 +1,38 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from "react";
 
-// Exemple de récupération QCM (doit être remplacé par parsing IA réel)
-const qcmExemple = [
-  {
-    question: "Quel est le rôle principal du CPU ?",
-    options: [
-      "Stocker les données",
-      "Effectuer des calculs",
-      "Afficher des images",
-      "Connecter au réseau"
-    ],
-    answer: "Effectuer des calculs"
-  },
-  {
-    question: "Quelle technologie permet de styliser une page web ?",
-    options: [
-      "Python",
-      "CSS",
-      "SQL",
-      "React"
-    ],
-    answer: "CSS"
-  }
-  // Ajoute ici les autres questions dynamiques du QCM généré par l’IA
-];
-
-const ChatInterface = () => {
-  // Mode QCM interactif : tu peux remplacer qcmExemple par la donnée IA parsée (format tableau JSON)
-  const [questions, setQuestions] = useState(qcmExemple); // Remplacer si besoin
+export default function ChatInterface() {
+  const [subject, setSubject] = useState("");
+  const [questions, setQuestions] = useState([]);
   const [current, setCurrent] = useState(0);
   const [score, setScore] = useState(0);
   const [done, setDone] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [userAnswer, setUserAnswer] = useState(null);
 
-  // Scroll vers le bas auto pour les messages (optionnel)
-  const messagesEndRef = useRef(null);
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-  useEffect(() => { scrollToBottom(); }, [current, done]);
+  // Récupération dynamique du QCM
+  const fetchQCM = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:3001/api/qcm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sujet: subject })
+      });
+      const data = await response.json();
 
-  // Répondre à une question
+      // le backend retourne { qcm: [...] }
+      setQuestions(data.qcm);
+      setCurrent(0);
+      setScore(0);
+      setDone(false);
+    } catch (err) {
+      alert("Erreur lors de la récupération du QCM : " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Interaction QCM
   const handleAnswer = (option) => {
     setUserAnswer(option);
     setTimeout(() => {
@@ -51,32 +43,49 @@ const ChatInterface = () => {
       } else {
         setDone(true);
       }
-    }, 900); // délai visual feedback
+    }, 900);
   };
 
-  // Affichage principal
+  // Remise à zéro
+  const resetAll = () => {
+    setQuestions([]);
+    setSubject("");
+    setScore(0);
+    setDone(false);
+    setCurrent(0);
+  };
+
   return (
     <div className="chat-container">
       <div className="chat-header">
         <h2>🧠 QCM IA interactif</h2>
-        <div className="api-info">
-          <small>Questions générées par Perplexity AI ou exemple</small>
-        </div>
       </div>
 
       <div className="messages-container">
-        {!done ? (
+        {!questions.length ? (
+          <>
+            <input
+              value={subject}
+              onChange={e => setSubject(e.target.value)}
+              placeholder="Sujet du QCM (ex : Python, réseau, React…)"
+              style={{ fontSize: 18, padding: 8, borderRadius: 8, marginRight: 8 }}
+            />
+            <button onClick={fetchQCM} disabled={!subject || loading} className="send-button">
+              {loading ? "Chargement…" : "Générer le QCM"}
+            </button>
+          </>
+        ) : !done ? (
           <div>
             <h3>{questions[current].question}</h3>
             {questions[current].options.map(option => (
               <button
                 key={option}
                 onClick={() => !userAnswer && handleAnswer(option)}
-                className={`send-button qcm-button`}
-                style={{ 
-                  display: "block", 
+                className="send-button qcm-button"
+                style={{
+                  display: "block",
                   margin: "8px 0",
-                  background: userAnswer === option 
+                  background: userAnswer === option
                     ? (option === questions[current].answer ? "#67e883" : "#eb5e65")
                     : undefined
                 }}
@@ -86,10 +95,10 @@ const ChatInterface = () => {
               </button>
             ))}
             {userAnswer && (
-              <div style={{marginTop: 12}}>
-                {userAnswer === questions[current].answer 
-                  ? "✅ Bonne réponse !" 
-                  : <>❌ Mauvaise réponse. <br/>La bonne réponse était : <b>{questions[current].answer}</b></>
+              <div style={{ marginTop: 12 }}>
+                {userAnswer === questions[current].answer
+                  ? "✅ Bonne réponse !"
+                  : <>❌ Mauvaise réponse. <br />La bonne réponse était : <b>{questions[current].answer}</b></>
                 }
               </div>
             )}
@@ -97,16 +106,16 @@ const ChatInterface = () => {
         ) : (
           <div>
             <h2>Quiz terminé !</h2>
-            <p>Score : <strong>{score}</strong> / {questions.length}</p>
+            <p>Score : <strong>{score}</strong> / {questions.length}</p>
+            <button onClick={resetAll} className="send-button" style={{ marginTop: 16 }}>Recommencer</button>
           </div>
         )}
-        <div ref={messagesEndRef} />
       </div>
     </div>
   );
-};
+}
 
-// === Styles intégrés (identiques à la base, ne pas toucher si ton amie gère le CSS)
+// Ton CSS intégré (modulaire si besoin)
 const styles = `
 .chat-container {
   background: white;
@@ -122,14 +131,6 @@ const styles = `
   color: white;
   padding: 20px;
   text-align: center;
-}
-.chat-header h2 {
-  margin: 0 0 5px 0;
-  font-size: 1.4em;
-}
-.api-info small {
-  opacity: 0.8;
-  font-size: 0.8em;
 }
 .messages-container {
   flex: 1;
@@ -156,16 +157,30 @@ const styles = `
 .qcm-button:hover:not(:disabled) {
   background: #5a6fd8;
 }
+.send-button {
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 12px;
+  min-width: 45px;
+  cursor: pointer;
+  font-size: 1em;
+  margin-left: 4px;
+  transition: all 0.3s;
+}
+.send-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
 @media (max-width: 600px) {
   .chat-container {
     height: 100vh;
     border-radius: 0;
   }
+  .messages-container { padding: 8px; }
 }
 `;
-
 const styleSheet = document.createElement('style');
 styleSheet.innerText = styles;
 document.head.appendChild(styleSheet);
-
-export default ChatInterface;
