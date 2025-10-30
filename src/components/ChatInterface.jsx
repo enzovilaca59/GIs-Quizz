@@ -27,7 +27,7 @@ const ChatInterface = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://gis-quizz.onrender.com', {
+      const response = await fetch('https://gis-quizz.onrender.com/api/qcm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sujet: userInput })
