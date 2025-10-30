@@ -27,18 +27,18 @@ const ChatInterface = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/qcm', {
+      const response = await fetch('https://gis-quizz.onrender.com', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sujet: userInput })
       });
-      
+
       const data = await response.json();
-      
+
       if (response.ok && data.qcm) {
-        setMessages(prev => [...prev, { 
-          text: `Voici votre QCM sur "${userInput}" ! Répondez aux questions :`, 
-          isUser: false 
+        setMessages(prev => [...prev, {
+          text: `Voici votre QCM sur "${userInput}" ! Répondez aux questions :`,
+          isUser: false
         }]);
         setQcmMode({
           questions: data.qcm,
@@ -52,9 +52,9 @@ const ChatInterface = () => {
       }
     } catch (error) {
       console.error('Erreur:', error);
-      setMessages(prev => [...prev, { 
-        text: "Désolé, une erreur s'est produite. Assurez-vous de demander un QCM sur un sujet en informatique.", 
-        isUser: false 
+      setMessages(prev => [...prev, {
+        text: "Désolé, une erreur s'est produite. Assurez-vous de demander un QCM sur un sujet en informatique.",
+        isUser: false
       }]);
     } finally {
       setIsLoading(false);
@@ -63,9 +63,9 @@ const ChatInterface = () => {
 
   const handleQcmAnswer = (option) => {
     if (qcmMode.userAnswer) return;
-    
+
     const isCorrect = option === qcmMode.questions[qcmMode.current].answer;
-    
+
     setQcmMode(prev => ({
       ...prev,
       userAnswer: option,
@@ -181,8 +181,8 @@ const ChatInterface = () => {
             rows="1"
             disabled={isLoading || qcmMode}
           />
-          <button 
-            onClick={handleSendMessage} 
+          <button
+            onClick={handleSendMessage}
             disabled={!inputMessage.trim() || isLoading || qcmMode}
             className="send-button"
           >
@@ -445,7 +445,7 @@ const styles = `
     height: 100vh;
     border-radius: 0;
   }
-  
+
   .message-content {
     max-width: 85%;
   }
