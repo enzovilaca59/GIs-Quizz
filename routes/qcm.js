@@ -2,7 +2,7 @@ import express from 'express';
 const router = express.Router();
 
 // Ta clé API Perplexity
-const PERPLEXITY_API_KEY = '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';
+const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY || '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';
 const PERPLEXITY_API_URL = 'https://api.perplexity.ai/chat/completions';
 
 // 🔥 VARIABLE : Change le nombre de questions ici

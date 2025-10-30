@@ -1,22 +1,25 @@
 import express from 'express';
 import cors from 'cors';
 // :red_circle: SUPPRIMÉ : import OpenAI from 'openai';
+import dotenv from 'dotenv';
+dotenv.config();
+
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-import qcmRouter from './routes/qcm.js'; // EXTENSION .js 
+import qcmRouter from './routes/qcm.js'; // EXTENSION .js
 app.use('/api', qcmRouter);
 
 
-const PERPLEXITY_API_KEY = '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'; // À remplacer par votre clé Perplexity
+const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY || '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';
 const PERPLEXITY_API_URL = 'https://api.perplexity.ai/chat/completions';
 
 app.post('/api/chat', async (req, res) => {
   try {
     const { message } = req.body;
-    
+
     // :green_circle: NOUVEAU : Appel à l'API Perplexity
     const response = await fetch(PERPLEXITY_API_URL, {
       method: 'POST',
@@ -39,10 +42,10 @@ app.post('/api/chat', async (req, res) => {
     }
 
     const data = await response.json();
-    
+
     // :green_circle: NOUVEAU : Structure de réponse différente pour Perplexity
     res.json({ text: data.choices[0].message.content });
-    
+
   } catch (error) {
     console.error('Erreur Perplexity AI:', error);
     // :green_circle: MODIFIÉ : Message d'erreur adapté
@@ -50,6 +53,7 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-app.listen(3001, () => {
-  console.log(':white_check_mark: Serveur backend démarré sur http://localhost:3001');
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`✅ Serveur backend démarré sur le port ${PORT}`);
 });
