@@ -1,19 +1,19 @@
 import express from 'express';
 import cors from 'cors';
-// :red_circle: SUPPRIMÉ : import OpenAI from 'openai';
+import { marked } from 'marked'; // Ajoute cette ligne
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
-const PERPLEXITY_API_KEY = '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'; // À remplacer par votre clé Perplexity
+const PERPLEXITY_API_KEY = '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';
 const PERPLEXITY_API_URL = 'https://api.perplexity.ai/chat/completions';
 
 app.post('/api/chat', async (req, res) => {
   try {
     const { message } = req.body;
-    
-    // :green_circle: NOUVEAU : Appel à l'API Perplexity
+
     const response = await fetch(PERPLEXITY_API_URL, {
       method: 'POST',
       headers: {
@@ -21,12 +21,12 @@ app.post('/api/chat', async (req, res) => {
         'Authorization': `Bearer ${PERPLEXITY_API_KEY}`
       },
       body: JSON.stringify({
-      "model": "sonar",
-      "messages": [
+        "model": "sonar",
+        "messages": [
           { "role": "system", "content": "Tu es un assistant pédagogique expert en informatique." },
-          { "role": "user", "content": "Génère un QCM sur le thème des bases de données en informatique, niveau intermédiaire. Le QCM doit comporter 5 questions et 4 propositions par question, dont une correcte." }
-       ],
-      "max_tokens": 500
+          { "role": "user", "content": `Génère un QCM sur le thème : ${message}. Le QCM doit comporter 5 questions et 4 propositions par question. À chaque question attends la réponse de l'utilisateur et resume en ligne la notion abordé.` }
+        ],
+        "max_tokens": 500
       })
     });
 
@@ -35,13 +35,14 @@ app.post('/api/chat', async (req, res) => {
     }
 
     const data = await response.json();
-    
-    // :green_circle: NOUVEAU : Structure de réponse différente pour Perplexity
-    res.json({ text: data.choices[0].message.content });
-    
+
+    // Conversion du markdown vers HTML avant l'envoi au client
+    const markdownResponse = data.choices[0].message.content;
+    const htmlResponse = marked.parse(markdownResponse);
+
+    res.json({ text: htmlResponse });
   } catch (error) {
     console.error('Erreur Perplexity AI:', error);
-    // :green_circle: MODIFIÉ : Message d'erreur adapté
     res.status(500).json({ error: 'Erreur avec Perplexity AI: ' + error.message });
   }
 });
