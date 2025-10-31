@@ -177,7 +177,7 @@ const ChatInterface = () => {
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Demandez un QCM (ex: QCM sur Python, JavaScript, Réseau...)"
+            placeholder="Demandez un QCM (ex: HTML, PHP, SQL)"
             rows="1"
             disabled={isLoading || qcmMode}
           />
