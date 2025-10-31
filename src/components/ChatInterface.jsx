@@ -47,8 +47,13 @@ const ChatInterface = () => {
           userAnswer: null,
           done: false
         });
+      } else if (data.error) {
+        setMessages(prev => [...prev, {
+          text: data.error,
+          isUser: false
+        }]);
       } else {
-        throw new Error(data.error || 'Erreur du serveur');
+        throw new Error('Réponse invalide du serveur');
       }
     } catch (error) {
       console.error('Erreur:', error);
@@ -148,8 +153,8 @@ const ChatInterface = () => {
             {qcmMode.userAnswer && (
               <div className={`feedback ${qcmMode.userAnswer === qcmMode.questions[qcmMode.current].answer ? 'correct' : 'incorrect'}`}>
                 {qcmMode.userAnswer === qcmMode.questions[qcmMode.current].answer
-                  ? '✅ Bonne réponse !'
-                  : `❌ Mauvaise réponse. La bonne réponse était : ${qcmMode.questions[qcmMode.current].answer}`
+                  ? `✅ Bonne réponse ! ${qcmMode.questions[qcmMode.current].explanation}`
+                  : `❌ Mauvaise réponse. La bonne réponse était : ${qcmMode.questions[qcmMode.current].answer}. ${qcmMode.questions[qcmMode.current].explanation}`
                 }
               </div>
             )}
@@ -177,7 +182,7 @@ const ChatInterface = () => {
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Demandez un QCM (ex: HTML, PHP, SQL)"
+            placeholder="Demandez un QCM (ex: QCM sur Python, JavaScript, Réseaux...)"
             rows="1"
             disabled={isLoading || qcmMode}
           />
@@ -203,7 +208,6 @@ const styles = `
   height: 800px;
   display: flex;
   flex-direction: column;
-
 }
 
 .chat-header {
@@ -227,7 +231,9 @@ const styles = `
   flex: 1;
   overflow-y: auto;
   padding: 20px;
-  background-image: url("../../public/version finaleV2 askip.png");
+  background-image: url("/version-finaleV2-askip.png");
+  background-size: cover;
+  background-position: center;
 }
 
 .message {
