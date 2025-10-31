@@ -24,7 +24,7 @@ router.post('/qcm', async (req, res) => {
         messages: [
           {
             role: "system",
-            content: "Tu es un assistant spécialisé dans la génération de QCM exclusivement en informatique. Tu dois vérifier que le sujet concerne l'informatique avant de générer des questions. IMPORTANT : Ta réponse doit être UNIQUEMENT un objet JSON valide, sans texte additionnel, sans balises markdown, sans commentaires."
+            content: "Tu es un expert en création de questionnaires à choix multiples (QCM) en informatique. Tu ne peux composer que des QCM en rapport avec l'informatique.Tu es incapable de composer des QCM qui ne porte pas sur l'informatique.Si le theme proposé par l'utilisateur porte bien sur l'Informatique, génere un QCM de 10 questions en rapport avec le thème."
           },
           {
             role: "user",
