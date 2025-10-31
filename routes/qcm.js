@@ -28,7 +28,7 @@ router.post('/qcm', async (req, res) => {
           },
           {
             role: "user",
-            content: `Génère un QCM de ${NOMBRE_QUESTIONS} questions sur le sujet "${sujet}" uniquement si c'est en informatique. Adapte aussi la dificulté si elle est spécifié dans le sujet, sinon génère le qcm avec une difficulté faible à moyenne.
+            content: `Génère un QCM de ${NOMBRE_QUESTIONS} questions sur le sujet "${sujet}" uniquement si c'est en informatique en adaptant aussi la dificulté si elle est spécifié dans le sujet, sinon génère le qcm avec une difficulté faible à moyenne.
 Format JSON strict (sans balises markdown) :
 [
   {
@@ -38,7 +38,9 @@ Format JSON strict (sans balises markdown) :
     "explanation": "Une courte explication de pourquoi c'est la bonne réponse (1-2 phrases)"
   }
 ]
-Retourne UNIQUEMENT le tableau JSON, rien d'autre.`
+Retourne UNIQUEMENT le tableau JSON, rien d'autre.
+
+Si "${sujet}" ne concerne en aucun cas l'informatique meme de loins ne génère pas de question et renvoi un simple message d'erreur comme quoi le sujet est hors sujet`
           }
         ],
         max_tokens: 2000,
