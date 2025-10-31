@@ -24,22 +24,35 @@ router.post('/qcm', async (req, res) => {
         messages: [
           {
             role: "system",
-            content: "Tu es un assistant qui génère des QCM en informatique. Tu dois UNIQUEMENT répondre avec un tableau JSON valide, sans texte supplémentaire, sans markdown, sans balises Si et seulement si le sujet concerne purement de l'informatique sinon tu génère un message d'erreur indiquant que c'est hors sujet, n'adapte pas le sujet à de l'informatique, il faut que le sujet donné soit absolument de l'informatique."
+            content: "Tu es un assistant spécialisé dans la génération de QCM exclusivement en informatique. Tu dois vérifier que le sujet concerne l'informatique avant de générer des questions. IMPORTANT : Ta réponse doit être UNIQUEMENT un objet JSON valide, sans texte additionnel, sans balises markdown, sans commentaires."
           },
           {
             role: "user",
-            content: `Tu es un expert en création de questionnaires à choix multiples (QCM) en informatique. Tu ne peux composer que des QCM en rapport avec l'informatique.Tu es incapable de composer des QCM qui ne porte pas sur l'informatique.Si le theme proposé par l'utilisateur porte bien sur l'Informatique, génere un QCM de "${NOMBRE_QUESTIONS}" questions en rapport avec le thème. Voici le thème : "${sujet}"
-Format JSON strict (sans balises markdown) :
-[
-  {
-    "question": "...",
-    "options": ["option1", "option2", "option3", "option4"],
-    "answer": "la bonne réponse exacte parmi les options",
-    "explanation": "Une courte explication de pourquoi c'est la bonne réponse (1-2 phrases)"
-  }
-]
+            content: `Analyse le sujet suivant : "${sujet}"
 
-Si "${sujet}" ne concerne en aucun cas l'informatique meme de loins ne génère pas de question et renvoi un simple message d'erreur comme quoi le sujet est hors sujet`
+      ÉTAPE 1 - VALIDATION : Ce sujet concerne-t-il l'informatique (programmation, réseaux, bases de données, sécurité, systèmes d'exploitation, développement web, algorithmes, hardware, etc.) ?
+
+      SI OUI : Génère exactement ${NOMBRE_QUESTIONS} questions au format JSON strict suivant :
+      {
+        "success": true,
+        "questions": [
+          {
+            "question": "Texte de la question",
+            "options": ["Option A", "Option B", "Option C", "Option D"],
+            "answer": "La réponse correcte (identique à l'une des options)",
+            "explanation": "Explication concise en 1-2 phrases"
+          }
+        ]
+      }
+
+      SI NON (sujet hors informatique) : Réponds uniquement avec ce JSON :
+      {
+        "success": false,
+        "error": "Sujet hors informatique",
+        "message": "Désolé, le sujet '${sujet}' ne concerne pas l'informatique. Je ne peux générer que des QCM portant sur la programmation, les réseaux, les bases de données, la sécurité informatique, ou d'autres domaines liés à l'informatique. Veuillez proposer un sujet informatique."
+      }
+
+      RAPPEL CRUCIAL : Réponds UNIQUEMENT avec du JSON valide dans l'un des deux formats ci-dessus, rien d'autre.`
           }
         ],
         max_tokens: 2000,
