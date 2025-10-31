@@ -203,7 +203,7 @@ const styles = `
   height: 800px;
   display: flex;
   flex-direction: column;
-  
+
 }
 
 .chat-header {
@@ -227,7 +227,7 @@ const styles = `
   flex: 1;
   overflow-y: auto;
   padding: 20px;
-  background-image: url("../version finaleV2 askip.png");
+  background-image: url("../../public/version finaleV2 askip.png");
 }
 
 .message {
