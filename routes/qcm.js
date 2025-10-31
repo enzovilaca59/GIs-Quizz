@@ -24,11 +24,12 @@ router.post('/qcm', async (req, res) => {
         messages: [
           {
             role: "system",
-            content: "Tu es un assistant qui génère des QCM en informatique. Tu dois UNIQUEMENT répondre avec un tableau JSON valide, sans texte supplémentaire, sans markdown, sans balises."
+            content: "Tu es un assistant qui génère des QCM en informatique. Tu dois UNIQUEMENT répondre avec un tableau JSON valide, sans texte supplémentaire, sans markdown, sans balises. Si le sujet donné n'est pas en rapport direct avec de l'informatique alors tu ne génère pas de qcm ou de cours"
           },
           {
             role: "user",
-            content: `Génère un QCM de ${NOMBRE_QUESTIONS} questions sur le sujet "${sujet}" en informatique.
+            content: `Génère un QCM de ${NOMBRE_QUESTIONS} questions ou un cours si c'est spécifé sur le sujet "${sujet}" en informatique Adapte aussi la dificulté si elle est spécifié dans le sujet, sinon génère le qcm ou le cours avec une difficulté faible à moyenne.
+            Si c'est un cours qui est demandé ne prends pas en compte le format json qui suis et génère le cours de manière simple et concise sinon utilise le format qui suis :
 Format JSON strict (sans balises markdown) :
 [
   {
