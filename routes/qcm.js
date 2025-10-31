@@ -28,7 +28,7 @@ router.post('/qcm', async (req, res) => {
           },
           {
             role: "user",
-            content: `Génère un QCM de ${NOMBRE_QUESTIONS} questions sur le sujet "${sujet}" en informatique. Adapte aussi la dificulté si elle est spécifié dans le sujet, sinon génère le qcm avec une difficulté faible à moyenne.
+            content: `Génère un QCM de ${NOMBRE_QUESTIONS} questions sur le sujet "${sujet}" uniquement si c'est en informatique. Adapte aussi la dificulté si elle est spécifié dans le sujet, sinon génère le qcm avec une difficulté faible à moyenne.
 Format JSON strict (sans balises markdown) :
 [
   {
