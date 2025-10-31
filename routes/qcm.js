@@ -38,7 +38,6 @@ Format JSON strict (sans balises markdown) :
     "explanation": "Une courte explication de pourquoi c'est la bonne réponse (1-2 phrases)"
   }
 ]
-Retourne UNIQUEMENT le tableau JSON, rien d'autre.
 
 Si "${sujet}" ne concerne en aucun cas l'informatique meme de loins ne génère pas de question et renvoi un simple message d'erreur comme quoi le sujet est hors sujet`
           }
