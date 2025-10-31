@@ -6,7 +6,17 @@ const PERPLEXITY_API_URL = 'https://api.perplexity.ai/chat/completions';
 const NOMBRE_QUESTIONS = 10;
 
 router.post('/qcm', async (req, res) => {
-  const sujet = req.body.sujet || "informatique";
+  const sujet = req.body.sujet?.trim();
+
+  // Validation stricte du sujet
+  if (!sujet || sujet === '') {
+    return res.status(400).json({
+      qcm: null,
+      error: "Veuillez fournir un sujet valide."
+    });
+  }
+
+  console.log(`\n🔍 Nouvelle requête QCM pour le sujet: "${sujet}"`);
 
   try {
     const response = await fetch(PERPLEXITY_API_URL, {
@@ -51,28 +61,37 @@ SI NON (sujet hors informatique) : Réponds uniquement avec ce JSON :
 RAPPEL CRUCIAL : Réponds UNIQUEMENT avec du JSON valide dans l'un des deux formats ci-dessus, rien d'autre.`
           }
         ],
-        max_tokens: 500,
-        temperature: 1
+        max_tokens: 2000,
+        temperature: 0.8,  // Augmente la variabilité
+        top_p: 1.0
       })
     });
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`❌ Erreur API Perplexity (${response.status}):`, errorText);
       throw new Error(`Erreur API Perplexity: ${response.status}`);
     }
 
     const data = await response.json();
+
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      throw new Error('Réponse API invalide (pas de choices)');
+    }
+
     let qcmText = data.choices[0].message.content.trim();
+
+    console.log(`📄 Réponse brute Perplexity (${qcmText.length} caractères):`, qcmText.substring(0, 150));
 
     // Nettoyage des balises markdown
     qcmText = qcmText.replace(/``````\n?/g, '').trim();
-
-    console.log('📄 Réponse brute Perplexity:', qcmText);
 
     // Parse le JSON
     const parsedData = JSON.parse(qcmText);
 
     // Vérifie le format success/error
     if (parsedData.success === false) {
+      console.log(`⚠️ Sujet hors informatique: "${sujet}"`);
       return res.json({
         qcm: null,
         error: parsedData.message
@@ -80,16 +99,19 @@ RAPPEL CRUCIAL : Réponds UNIQUEMENT avec du JSON valide dans l'un des deux form
     }
 
     // Vérifie que questions existe et est un tableau
-    if (!parsedData.questions || !Array.isArray(parsedData.questions)) {
-      throw new Error('Format de réponse invalide : pas de tableau questions');
+    if (!parsedData.questions || !Array.isArray(parsedData.questions) || parsedData.questions.length === 0) {
+      throw new Error('Format de réponse invalide : pas de tableau questions valide');
     }
 
-    res.json({ qcm: parsedData.questions });
+    console.log(`✅ QCM généré avec succès: ${parsedData.questions.length} questions pour "${sujet}"`);
+
+    // Important : renvoie une nouvelle réponse à chaque fois
+    return res.json({ qcm: parsedData.questions });
 
   } catch (error) {
-    console.error('❌ Erreur génération QCM:', error.message);
+    console.error(`❌ Erreur génération QCM pour "${sujet}":`, error.message);
 
-    res.status(500).json({
+    return res.status(500).json({
       qcm: null,
       error: "Une erreur s'est produite lors de la génération du QCM. Veuillez réessayer avec un sujet lié à l'informatique."
     });

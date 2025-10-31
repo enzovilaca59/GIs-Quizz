@@ -22,16 +22,24 @@ const ChatInterface = () => {
 
     const userMessage = { text: inputMessage, isUser: true };
     setMessages(prev => [...prev, userMessage]);
-    const userInput = inputMessage;
+
+    const userInput = inputMessage.trim();
     setInputMessage('');
     setIsLoading(true);
+
+    console.log(`📤 Envoi de la requête pour le sujet: "${userInput}"`);
 
     try {
       const response = await fetch('https://gis-quizz.onrender.com/api/qcm', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache'
+        },
         body: JSON.stringify({ sujet: userInput })
       });
+
+      console.log(`📥 Réponse reçue (status: ${response.status})`);
 
       const data = await response.json();
 
@@ -56,7 +64,7 @@ const ChatInterface = () => {
         throw new Error('Réponse invalide du serveur');
       }
     } catch (error) {
-      console.error('Erreur:', error);
+      console.error('❌ Erreur frontend:', error);
       setMessages(prev => [...prev, {
         text: "Désolé, une erreur s'est produite. Assurez-vous de demander un QCM sur un sujet en informatique.",
         isUser: false
@@ -153,8 +161,8 @@ const ChatInterface = () => {
             {qcmMode.userAnswer && (
               <div className={`feedback ${qcmMode.userAnswer === qcmMode.questions[qcmMode.current].answer ? 'correct' : 'incorrect'}`}>
                 {qcmMode.userAnswer === qcmMode.questions[qcmMode.current].answer
-                  ? `✅ Bonne réponse ! ${qcmMode.questions[qcmMode.current].explanation}`
-                  : `❌ Mauvaise réponse. La bonne réponse était : ${qcmMode.questions[qcmMode.current].answer}. ${qcmMode.questions[qcmMode.current].explanation}`
+                  ? `✅ Bonne réponse ! ${qcmMode.questions[qcmMode.current].explanation || ''}`
+                  : `❌ Mauvaise réponse. La bonne réponse était : ${qcmMode.questions[qcmMode.current].answer}. ${qcmMode.questions[qcmMode.current].explanation || ''}`
                 }
               </div>
             )}
@@ -442,7 +450,7 @@ const styles = `
 }
 
 .send-button:disabled {
-  background: #F9C74F;
+  background: #cccccc;
   cursor: not-allowed;
   transform: none;
 }
