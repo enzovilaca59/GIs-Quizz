@@ -24,11 +24,11 @@ router.post('/qcm', async (req, res) => {
         messages: [
           {
             role: "system",
-            content: "Tu es un assistant qui génère des QCM en informatique. Tu dois UNIQUEMENT répondre avec un tableau JSON valide, sans texte supplémentaire, sans markdown, sans balises. Si le sujet donné n'est pas en rapport direct avec de l'informatique alors tu génère un message d'erreur indiquant que c'est hors sujet"
+            content: "Tu es un assistant qui génère des QCM en informatique. Tu dois UNIQUEMENT répondre avec un tableau JSON valide, sans texte supplémentaire, sans markdown, sans balises. Si le sujet donné n'est pas en rapport direct avec uniquement de l'informatique alors tu génère un message d'erreur indiquant que c'est hors sujet, n'adapte pas le sujet à de l'informatique, il faut que le sujet donné soit absolument de l'informatique."
           },
           {
             role: "user",
-            content: `Génère un QCM de ${NOMBRE_QUESTIONS} questions sur le sujet "${sujet}" en informatique Adapte aussi la dificulté si elle est spécifié dans le sujet, sinon génère le qcm avec une difficulté faible à moyenne.
+            content: `Génère un QCM de ${NOMBRE_QUESTIONS} questions sur le sujet "${sujet}" en informatique. Adapte aussi la dificulté si elle est spécifié dans le sujet, sinon génère le qcm avec une difficulté faible à moyenne.
 Format JSON strict (sans balises markdown) :
 [
   {
