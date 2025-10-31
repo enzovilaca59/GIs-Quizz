@@ -51,8 +51,8 @@ SI NON (sujet hors informatique) : Réponds uniquement avec ce JSON :
 RAPPEL CRUCIAL : Réponds UNIQUEMENT avec du JSON valide dans l'un des deux formats ci-dessus, rien d'autre.`
           }
         ],
-        max_tokens: 2000,
-        temperature: 0.7
+        max_tokens: 100,
+        temperature: 0.25
       })
     });
 
