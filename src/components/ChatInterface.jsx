@@ -198,15 +198,16 @@ const styles = `
 .chat-container {
   background: white;
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 1);
   overflow: hidden;
-  height: 600px;
+  height: 800px;
   display: flex;
   flex-direction: column;
+  
 }
 
 .chat-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #3181C7;
   color: white;
   padding: 20px;
   text-align: center;
@@ -226,7 +227,7 @@ const styles = `
   flex: 1;
   overflow-y: auto;
   padding: 20px;
-  background: #f8f9fa;
+  background-image: url("../version finaleV2 askip.png");
 }
 
 .message {
@@ -245,14 +246,14 @@ const styles = `
 }
 
 .user-message .message-content {
-  background: #667eea;
+  background: #3181C7;
   color: white;
   border-radius: 18px 18px 5px 18px;
 }
 
 .ai-message .message-content {
   background: white;
-  color: #333;
+  color: #000000ff;
   border-radius: 18px 18px 18px 5px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
@@ -382,8 +383,8 @@ const styles = `
 
 .input-container {
   padding: 20px;
-  background: white;
-  border-top: 1px solid #e0e0e0;
+  background: #667eea;
+  border-top: 1px solid #3181C7;
 }
 
 .input-wrapper {
@@ -394,7 +395,7 @@ const styles = `
 
 .input-wrapper textarea {
   flex: 1;
-  border: 2px solid #e0e0e0;
+  border: 2px solid #F9C74F;
   border-radius: 20px;
   padding: 12px 16px;
   font-size: 14px;
@@ -415,7 +416,7 @@ const styles = `
 }
 
 .send-button {
-  background: #667eea;
+  background: #F9C74F;
   color: white;
   border: none;
   border-radius: 50%;
@@ -435,7 +436,7 @@ const styles = `
 }
 
 .send-button:disabled {
-  background: #ccc;
+  background: #F9C74F;
   cursor: not-allowed;
   transform: none;
 }
