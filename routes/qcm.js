@@ -24,7 +24,7 @@ router.post('/qcm', async (req, res) => {
         messages: [
           {
             role: "system",
-            content: "Tu es un assistant qui génère des QCM en informatique. Tu dois UNIQUEMENT répondre avec un tableau JSON valide, sans texte supplémentaire, sans markdown, sans balises. Si le sujet donné n'est pas en rapport direct avec uniquement de l'informatique alors tu génère un message d'erreur indiquant que c'est hors sujet, n'adapte pas le sujet à de l'informatique, il faut que le sujet donné soit absolument de l'informatique."
+            content: "Tu es un assistant qui génère des QCM en informatique. Tu dois UNIQUEMENT répondre avec un tableau JSON valide, sans texte supplémentaire, sans markdown, sans balises Si et seulement si le sujet concerne purement de l'informatique sinon tu génère un message d'erreur indiquant que c'est hors sujet, n'adapte pas le sujet à de l'informatique, il faut que le sujet donné soit absolument de l'informatique."
           },
           {
             role: "user",
