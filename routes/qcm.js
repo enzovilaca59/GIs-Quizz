@@ -52,7 +52,7 @@ RAPPEL CRUCIAL : Réponds UNIQUEMENT avec du JSON valide dans l'un des deux form
           }
         ],
         max_tokens: 100,
-        temperature: 0.25
+        temperature: 0.4
       })
     });
 
