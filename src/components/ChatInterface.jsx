@@ -7,7 +7,10 @@ const ChatInterface = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [qcmMode, setQcmMode] = useState(null);
+  const [timer, setTimer] = useState(0);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
   const messagesEndRef = useRef(null);
+  const timerRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -16,6 +19,62 @@ const ChatInterface = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, qcmMode]);
+
+  // Gestion du minuteur
+  useEffect(() => {
+    if (isTimerRunning) {
+      timerRef.current = setInterval(() => {
+        setTimer(prev => prev + 1);
+      }, 1000);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [isTimerRunning]);
+
+  const startTimer = () => {
+    setTimer(0);
+    setIsTimerRunning(true);
+  };
+
+  const stopTimer = () => {
+    setIsTimerRunning(false);
+    return timer;
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const getPersonalizedResult = (score, totalQuestions, timeTaken) => {
+    const percentage = (score / totalQuestions) * 100;
+    const averageTimePerQuestion = timeTaken / totalQuestions;
+
+    if (percentage >= 80 && averageTimePerQuestion <= 15) {
+      return `🏆 Excellent ! Vous maîtrisez parfaitement le sujet avec ${score}/${totalQuestions} en seulement ${formatTime(timeTaken)}. Rapidité et précision au rendez-vous !`;
+    } else if (percentage >= 80 && averageTimePerQuestion > 15) {
+      return `📚 Très bon score de ${score}/${totalQuestions} en ${formatTime(timeTaken)} ! Vous avez pris le temps de réfléchir, et ça paie.`;
+    } else if (percentage >= 60 && averageTimePerQuestion <= 10) {
+      return `⚡ Rapide mais attention ! ${score}/${totalQuestions} en ${formatTime(timeTaken)}. Votre rapidité est impressionnante, mais relisez bien les questions.`;
+    } else if (percentage >= 60 && averageTimePerQuestion > 10) {
+      return `👍 Bon travail ! ${score}/${totalQuestions} en ${formatTime(timeTaken)}. Vous progressez bien, continuez comme ça !`;
+    } else if (percentage < 60 && averageTimePerQuestion <= 10) {
+      return `🚀 Trop vite ! ${score}/${totalQuestions} en ${formatTime(timeTaken)}. Vous êtes rapide mais faites des erreurs d'inattention. Prenez votre temps !`;
+    } else if (percentage < 60 && averageTimePerQuestion > 10) {
+      return `📖 Continuez à apprendre ! ${score}/${totalQuestions} en ${formatTime(timeTaken)}. Le sujet mérite plus de révision, mais vous avez pris le temps de réfléchir.`;
+    } else {
+      return `🎯 Score : ${score}/${totalQuestions} | Temps : ${formatTime(timeTaken)}. Chaque quiz est une occasion d'apprendre !`;
+    }
+  };
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
@@ -45,7 +104,7 @@ const ChatInterface = () => {
 
       if (response.ok && data.qcm) {
         setMessages(prev => [...prev, {
-          text: `Voici votre QCM sur "${userInput}" ! Répondez aux questions :`,
+          text: `Voici votre QCM sur "${userInput}" ! ⏱️ Le chrono est lancé...`,
           isUser: false
         }]);
         setQcmMode({
@@ -55,6 +114,7 @@ const ChatInterface = () => {
           userAnswer: null,
           done: false
         });
+        startTimer(); // Démarre le minuteur
       } else if (data.error) {
         setMessages(prev => [...prev, {
           text: data.error,
@@ -94,8 +154,16 @@ const ChatInterface = () => {
         }));
       } else {
         const finalScore = isCorrect ? qcmMode.score + 1 : qcmMode.score;
+        const timeTaken = stopTimer(); // Arrête le minuteur et récupère le temps
+        
+        const resultMessage = getPersonalizedResult(
+          finalScore, 
+          qcmMode.questions.length, 
+          timeTaken
+        );
+
         setMessages(prev => [...prev, {
-          text: `🎉 Quiz terminé ! Votre score : ${finalScore}/${qcmMode.questions.length}`,
+          text: resultMessage,
           isUser: false
         }]);
         setQcmMode(null);
@@ -137,7 +205,8 @@ const ChatInterface = () => {
         {qcmMode && !qcmMode.done && (
           <div className="qcm-question-container">
             <div className="qcm-header">
-              Question {qcmMode.current + 1}/{qcmMode.questions.length}
+              <div>Question {qcmMode.current + 1}/{qcmMode.questions.length}</div>
+              <div className="timer">⏱️ {formatTime(timer)}</div>
             </div>
             <h3 className="qcm-question">{qcmMode.questions[qcmMode.current].question}</h3>
             <div className="qcm-options">
@@ -304,6 +373,17 @@ const styles = `
   font-weight: bold;
   margin-bottom: 10px;
   font-size: 0.9em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.timer {
+  background: #f0f0f0;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8em;
+  color: #666;
 }
 
 .qcm-question {
@@ -463,6 +543,12 @@ const styles = `
 
   .message-content {
     max-width: 85%;
+  }
+
+  .qcm-header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
   }
 }
 `;
