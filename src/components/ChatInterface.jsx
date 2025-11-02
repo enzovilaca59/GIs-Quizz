@@ -30,7 +30,7 @@ const ChatInterface = () => {
     console.log(`📤 Envoi de la requête pour le sujet: "${userInput}"`);
 
     try {
-      const response = await fetch('https://gis-quizz.onrender.com/api/qcm', {
+      const response = await fetch('/api/qcm', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -239,7 +239,7 @@ const styles = `
   flex: 1;
   overflow-y: auto;
   padding: 20px;
-  background-image: url("/version-finaleV2-askip.png");
+  background-image: url('https://i.postimg.cc/DwJYsqFc/version-finale-V2-askip.png');
   background-size: cover;
   background-position: center;
 }
