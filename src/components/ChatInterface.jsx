@@ -89,7 +89,7 @@ const ChatInterface = () => {
     console.log(`📤 Envoi de la requête pour le sujet: "${userInput}"`);
 
     try {
-      const response = await fetch('/api/qcm', {
+      const response = await fetch('https://gis-quizz.onrender.com/api/qcm', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -155,10 +155,10 @@ const ChatInterface = () => {
       } else {
         const finalScore = isCorrect ? qcmMode.score + 1 : qcmMode.score;
         const timeTaken = stopTimer(); // Arrête le minuteur et récupère le temps
-        
+
         const resultMessage = getPersonalizedResult(
-          finalScore, 
-          qcmMode.questions.length, 
+          finalScore,
+          qcmMode.questions.length,
           timeTaken
         );
 
